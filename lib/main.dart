@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // await ParkingInfoDb().database;
   runApp(
     ChangeNotifierProvider(
       create: (context) => NumberPadModel(),

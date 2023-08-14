@@ -29,7 +29,6 @@ class _TabPageState extends State<TabPage> with SingleTickerProviderStateMixin {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          centerTitle: true,
           bottom: TabBar(
             controller: _tabController,
             tabs: const [
