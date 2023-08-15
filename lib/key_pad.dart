@@ -9,17 +9,19 @@ class FourDigitNumberPad extends StatelessWidget {
   const FourDigitNumberPad({super.key});
 
   Future<void> onSubmit(BuildContext context) async {
-    final model = Provider.of<NumberPadModel>(context, listen: false);
+    final carNumberProvider =
+        Provider.of<NumberPadModel>(context, listen: false);
     try {
-      if (model.input.length == 4) {
+      if (carNumberProvider.input.length == 4) {
         CarInfo newInfo = CarInfo(
             id: null,
-            carNumber: model.input,
+            carNumber: carNumberProvider.input,
             date: DateTime.now(),
             isChecked: 0);
         await ParkingInfoDb().insert(newInfo);
-        Assets().showPopup(context, '차량 번호 [${model.input}] 등록되었습니다.');
-        model.clearNumber();
+        Assets()
+            .showPopup(context, '차량 번호 [${carNumberProvider.input}] 등록되었습니다.');
+        carNumberProvider.clearNumber();
       } else {
         Assets().showPopup(context, '차량 번호는 4자리로 입력해주세요.');
       }
@@ -29,12 +31,12 @@ class FourDigitNumberPad extends StatelessWidget {
   }
 
   Widget _buildNumberButton(
-      int number, NumberPadModel model, BuildContext context) {
+      int number, NumberPadModel carNumberProvider, BuildContext context) {
     if (number >= 1 && number <= 9) {
       return SizedBox(
         width: double.infinity,
         child: TextButton(
-          onPressed: () => model.addNumber(number),
+          onPressed: () => carNumberProvider.addNumber(number),
           child: Text(
             number.toString(),
             style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
@@ -45,7 +47,7 @@ class FourDigitNumberPad extends StatelessWidget {
       return SizedBox(
         width: double.infinity,
         child: TextButton(
-          onPressed: () => model.deleteNumber(),
+          onPressed: () => carNumberProvider.deleteNumber(),
           child: const Icon(
             Icons.arrow_back,
             size: 50,
@@ -56,7 +58,7 @@ class FourDigitNumberPad extends StatelessWidget {
       return SizedBox(
         width: double.infinity,
         child: TextButton(
-          onPressed: () => model.addNumber(0),
+          onPressed: () => carNumberProvider.addNumber(0),
           child: const Text(
             '0',
             style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
@@ -101,12 +103,11 @@ class FourDigitNumberPad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = Provider.of<NumberPadModel>(context);
+    final carNumberProvider = Provider.of<NumberPadModel>(context);
     var size = MediaQuery.of(context).size;
     final double screenHeight = (size.height - kToolbarHeight - 24) / 2;
     final double screenWidth = size.width;
-    final paddedInput = model.input.padRight(4, ' ');
-    debugPrint('$screenWidth');
+    final paddedInput = carNumberProvider.input.padRight(4, ' ');
     return Scaffold(
       body: Container(
         width: screenWidth,
@@ -151,7 +152,8 @@ class FourDigitNumberPad extends StatelessWidget {
                   crossAxisCount: 3,
                   children: List.generate(12, (index) {
                     int number = index + 1;
-                    return _buildNumberButton(number, model, context);
+                    return _buildNumberButton(
+                        number, carNumberProvider, context);
                   }),
                 ),
               ),

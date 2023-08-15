@@ -74,7 +74,7 @@ class ParkingInfoDb {
   Future<List<CarInfo>> getAllCarInfosByCarNumber(String number) async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query('car_info',
-        where: "carNumber LIKE '$number'", orderBy: 'date DESC');
+        where: "carNumber LIKE '%$number%'", orderBy: 'date DESC');
     return List.generate(maps.length, (i) {
       return CarInfo.fromJson(maps[i]);
     });
@@ -93,7 +93,7 @@ class ParkingInfoDb {
       String number, String date) async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query('car_info',
-        where: "carNumber LIKE '$number' AND date LIKE '$date%'",
+        where: "carNumber LIKE '%$number%' AND date LIKE '$date%'",
         orderBy: 'date DESC');
     return List.generate(maps.length, (i) {
       return CarInfo.fromJson(maps[i]);

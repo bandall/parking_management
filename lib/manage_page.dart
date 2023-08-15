@@ -16,65 +16,15 @@ class _CarInfoTablePageState extends State<CarInfoTablePage> {
   ];
 
   String carNumberFilter = '';
-  DateTime? startDate;
+  DateTime? selectedDate = DateTime.now();
   TextEditingController carNumberController = TextEditingController();
   int unconfirmedCount = 0;
   int todayCount = 0;
 
   @override
   void initState() {
-    setInitData();
+    setTodayData();
     super.initState();
-  }
-
-  void setInitData() async {
-    late List<CarInfo> fetchedCarInfos;
-    try {
-      fetchedCarInfos = await ParkingInfoDb()
-          .getAllCarInfosByDate(DateTime.now().toString().substring(0, 10));
-      setState(() {
-        carInfos = fetchedCarInfos;
-        unconfirmedCount = carInfos.where((info) => info.isChecked == 0).length;
-        todayCount = fetchedCarInfos.length;
-      });
-    } catch (e) {
-      Assets().showPopup(context, '데이터베이스 조회 중 오류가 발생했습니다.');
-    }
-  }
-
-  void onSearch() async {
-    late List<CarInfo> fetchedCarInfos;
-
-    try {
-      if (carNumberFilter != '' && startDate != null) {
-        fetchedCarInfos = await ParkingInfoDb()
-            .getAllCarInfosByCarNumberAndDate(
-                carNumberFilter, startDate.toString().substring(0, 10));
-      } else if (carNumberFilter != '') {
-        fetchedCarInfos =
-            await ParkingInfoDb().getAllCarInfosByCarNumber(carNumberFilter);
-      } else if (startDate != null) {
-        fetchedCarInfos = await ParkingInfoDb()
-            .getAllCarInfosByDate(startDate.toString().substring(0, 10));
-      } else {
-        fetchedCarInfos = await ParkingInfoDb().getAllCarInfos();
-      }
-
-      setState(() {
-        carInfos = fetchedCarInfos;
-      });
-    } catch (e) {
-      debugPrint(e.toString());
-      Assets().showPopup(context, '데이터베이스 조회 중 오류가 발생했습니다.');
-    }
-  }
-
-  void resetFilter() async {
-    setState(() {
-      carNumberFilter = '';
-      startDate = null;
-      carNumberController.clear();
-    });
   }
 
   void setTodayData() async {
@@ -85,6 +35,11 @@ class _CarInfoTablePageState extends State<CarInfoTablePage> {
 
       setState(() {
         carInfos = fetchedCarInfos;
+        unconfirmedCount = carInfos.where((info) => info.isChecked == 0).length;
+        todayCount = fetchedCarInfos.length;
+        carNumberFilter = '';
+        carNumberController.clear();
+        selectedDate = DateTime.now();
       });
     } catch (e) {
       debugPrint(e.toString());
@@ -92,32 +47,105 @@ class _CarInfoTablePageState extends State<CarInfoTablePage> {
     }
   }
 
-  void onConfirm(int? id) async {
+  void setAllData() async {
     late List<CarInfo> fetchedCarInfos;
     try {
-      await ParkingInfoDb().updateConfirm(id, true);
       fetchedCarInfos = await ParkingInfoDb().getAllCarInfos();
+      setState(() {
+        carInfos = fetchedCarInfos;
+        unconfirmedCount = carInfos.where((info) => info.isChecked == 0).length;
+        carNumberFilter = '';
+        carNumberController.clear();
+        selectedDate = null;
+      });
     } catch (e) {
       Assets().showPopup(context, '데이터베이스 조회 중 오류가 발생했습니다.');
     }
+  }
+
+  void onSearch() async {
+    late List<CarInfo> fetchedCarInfos;
+
+    try {
+      if (carNumberFilter != '' && selectedDate != null) {
+        fetchedCarInfos = await ParkingInfoDb()
+            .getAllCarInfosByCarNumberAndDate(
+                carNumberFilter, selectedDate.toString().substring(0, 10));
+      } else if (carNumberFilter != '') {
+        fetchedCarInfos =
+            await ParkingInfoDb().getAllCarInfosByCarNumber(carNumberFilter);
+      } else if (selectedDate != null) {
+        fetchedCarInfos = await ParkingInfoDb()
+            .getAllCarInfosByDate(selectedDate.toString().substring(0, 10));
+      } else {
+        fetchedCarInfos = await ParkingInfoDb().getAllCarInfos();
+      }
+
+      setState(() {
+        carInfos = fetchedCarInfos;
+        unconfirmedCount = carInfos.where((info) => info.isChecked == 0).length;
+      });
+    } catch (e) {
+      debugPrint(e.toString());
+      Assets().showPopup(context, '데이터베이스 조회 중 오류가 발생했습니다.');
+    }
+  }
+
+  void resetFilter() async {
     setState(() {
-      carInfos = fetchedCarInfos;
-      unconfirmedCount = carInfos.where((info) => info.isChecked == 0).length;
+      carNumberFilter = '';
+      selectedDate = null;
+      carNumberController.clear();
     });
   }
 
+  void onConfirm(int? id) async {
+    if (id == null) {
+      Assets().showPopup(context, 'ID가 제공되지 않았습니다.');
+      return;
+    }
+
+    try {
+      await ParkingInfoDb().updateConfirm(id, true);
+      final targetCarInfo = carInfos.firstWhere(
+        (info) => info.id == id,
+      );
+      targetCarInfo.isChecked = 1;
+
+      setState(() {
+        carInfos = carInfos
+            .map((info) => info.id == targetCarInfo.id ? targetCarInfo : info)
+            .toList();
+        unconfirmedCount = carInfos.where((info) => info.isChecked == 0).length;
+      });
+    } catch (e) {
+      Assets().showPopup(context, '데이터베이스 업데이트 중 오류가 발생했습니다.');
+    }
+  }
+
   void deleteRow(int? id) async {
-    late List<CarInfo> fetchedCarInfos;
+    if (id == null) {
+      Assets().showPopup(context, 'ID가 제공되지 않았습니다.');
+      return;
+    }
+
     try {
       await ParkingInfoDb().delete(id);
-      fetchedCarInfos = await ParkingInfoDb().getAllCarInfos();
+      final targetCarInfo = carInfos.firstWhere(
+        (info) => info.id == id,
+      );
+
+      int newTodayCount = (await ParkingInfoDb()
+              .getAllCarInfosByDate(DateTime.now().toString().substring(0, 10)))
+          .length;
+      setState(() {
+        carInfos = carInfos.where((info) => info.id != id).toList();
+        unconfirmedCount = carInfos.where((info) => info.isChecked == 0).length;
+        todayCount = newTodayCount;
+      });
     } catch (e) {
-      Assets().showPopup(context, '데이터베이스 조회 중 오류가 발생했습니다.');
+      Assets().showPopup(context, '데이터베이스 업데이트 중 오류가 발생했습니다.');
     }
-    setState(() {
-      carInfos = fetchedCarInfos;
-      unconfirmedCount = carInfos.where((info) => info.isChecked == 0).length;
-    });
   }
 
   void onDelete(int? id) {
@@ -232,9 +260,11 @@ class _CarInfoTablePageState extends State<CarInfoTablePage> {
                             )),
                             DataCell(
                               carInfo.isChecked == 1
-                                  ? const Text(
-                                      '   확인됨',
-                                      style: TextStyle(fontSize: 18),
+                                  ? OutlinedButton(
+                                      onPressed: () {},
+                                      child: Text('확인됨',
+                                          style: TextStyle(
+                                              color: Colors.blue[700])),
                                     )
                                   : ElevatedButton(
                                       onPressed: () {
@@ -276,7 +306,11 @@ class _CarInfoTablePageState extends State<CarInfoTablePage> {
                         ),
                         const Divider(),
                         ListTile(
-                          title: TextFormField(
+                          title: const Text(
+                            '차량번호 검색\n',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: TextFormField(
                             keyboardType: TextInputType.number,
                             controller: carNumberController,
                             decoration: const InputDecoration(
@@ -296,9 +330,9 @@ class _CarInfoTablePageState extends State<CarInfoTablePage> {
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           subtitle: Text(
-                            startDate == null
-                                ? "선택해주세요"
-                                : "${startDate!.year}년 ${startDate!.month}월 ${startDate!.day}일",
+                            selectedDate == null
+                                ? "날짜를 선택해주세요"
+                                : "${selectedDate!.year}년 ${selectedDate!.month}월 ${selectedDate!.day}일",
                           ),
                           onTap: () async {
                             final DateTime? selectedStart =
@@ -310,7 +344,7 @@ class _CarInfoTablePageState extends State<CarInfoTablePage> {
                             );
                             if (selectedStart != null) {
                               setState(() {
-                                startDate = selectedStart;
+                                selectedDate = selectedStart;
                               });
                             }
                           },
@@ -345,7 +379,7 @@ class _CarInfoTablePageState extends State<CarInfoTablePage> {
                             children: [
                               ElevatedButton(
                                 onPressed: () {
-                                  setInitData();
+                                  setAllData();
                                 },
                                 child: const Text('모두 조회'),
                               ),
@@ -359,24 +393,20 @@ class _CarInfoTablePageState extends State<CarInfoTablePage> {
                           ),
                         ),
                         const Divider(),
-                        const SizedBox(
-                          height: 10,
-                        ),
                         ListTile(
                           title: Text(
                             '미확인 차량: $unconfirmedCount 대',
                             style: const TextStyle(fontSize: 20),
                           ),
                         ),
-                        const SizedBox(
-                          height: 10,
-                        ),
+                        const Divider(),
                         ListTile(
                           title: Text(
                             '오늘 등록한 차량: $todayCount 대',
                             style: const TextStyle(fontSize: 20),
                           ),
                         ),
+                        const Divider(),
                       ],
                     ),
                   ),
