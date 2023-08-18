@@ -1,9 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.parking_management">
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="주차도우미"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true">
+        
         <activity
             android:name=".MainActivity"
             android:exported="true"

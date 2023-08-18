@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:parking_management/data/car_info.dart';
-import 'package:parking_management/data/db_helper.dart';
+import 'package:parking_management/model/car_info.dart';
+import 'package:parking_management/model/db_helper.dart';
 import 'package:parking_management/popup/assets.dart';
 
 class CarInfoTablePage extends StatefulWidget {
@@ -43,7 +43,7 @@ class _CarInfoTablePageState extends State<CarInfoTablePage> {
       });
     } catch (e) {
       debugPrint(e.toString());
-      Assets().showPopup(context, '데이터베이스 조회 중 오류가 발생했습니다.');
+      Assets().showPopupAutoPop(context, '데이터베이스 조회 중 오류가 발생했습니다.');
     }
   }
 
@@ -59,7 +59,7 @@ class _CarInfoTablePageState extends State<CarInfoTablePage> {
         selectedDate = null;
       });
     } catch (e) {
-      Assets().showPopup(context, '데이터베이스 조회 중 오류가 발생했습니다.');
+      Assets().showPopupAutoPop(context, '데이터베이스 조회 중 오류가 발생했습니다.');
     }
   }
 
@@ -87,7 +87,7 @@ class _CarInfoTablePageState extends State<CarInfoTablePage> {
       });
     } catch (e) {
       debugPrint(e.toString());
-      Assets().showPopup(context, '데이터베이스 조회 중 오류가 발생했습니다.');
+      Assets().showPopupAutoPop(context, '데이터베이스 조회 중 오류가 발생했습니다.');
     }
   }
 
@@ -101,7 +101,7 @@ class _CarInfoTablePageState extends State<CarInfoTablePage> {
 
   void onConfirm(int? id) async {
     if (id == null) {
-      Assets().showPopup(context, 'ID가 제공되지 않았습니다.');
+      Assets().showPopupAutoPop(context, 'ID가 제공되지 않았습니다.');
       return;
     }
 
@@ -119,13 +119,13 @@ class _CarInfoTablePageState extends State<CarInfoTablePage> {
         unconfirmedCount = carInfos.where((info) => info.isChecked == 0).length;
       });
     } catch (e) {
-      Assets().showPopup(context, '데이터베이스 업데이트 중 오류가 발생했습니다.');
+      Assets().showPopupAutoPop(context, '데이터베이스 업데이트 중 오류가 발생했습니다.');
     }
   }
 
   void deleteRow(int? id) async {
     if (id == null) {
-      Assets().showPopup(context, 'ID가 제공되지 않았습니다.');
+      Assets().showPopupAutoPop(context, 'ID가 제공되지 않았습니다.');
       return;
     }
 
@@ -144,7 +144,7 @@ class _CarInfoTablePageState extends State<CarInfoTablePage> {
         todayCount = newTodayCount;
       });
     } catch (e) {
-      Assets().showPopup(context, '데이터베이스 업데이트 중 오류가 발생했습니다.');
+      Assets().showPopupAutoPop(context, '데이터베이스 업데이트 중 오류가 발생했습니다.');
     }
   }
 

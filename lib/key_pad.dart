@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:parking_management/data/car_info.dart';
-import 'package:parking_management/data/db_helper.dart';
+import 'package:parking_management/car_discount.dart';
 import 'package:parking_management/popup/assets.dart';
 import 'package:provider/provider.dart';
 import 'package:parking_management/provider/number_provider.dart';
@@ -12,23 +11,42 @@ class FourDigitNumberPad extends StatelessWidget {
     final carNumberProvider =
         Provider.of<NumberPadModel>(context, listen: false);
     try {
+      String carNumber = carNumberProvider.input;
       if (carNumberProvider.input.length == 4) {
-        CarInfo newInfo = CarInfo(
-            id: null,
-            carNumber: carNumberProvider.input,
-            date: DateTime.now(),
-            isChecked: 0);
-        await ParkingInfoDb().insert(newInfo);
-        Assets()
-            .showPopup(context, '차량 번호 [${carNumberProvider.input}] 등록되었습니다.');
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => CarDiscountPage(carNumber: carNumber)));
         carNumberProvider.clearNumber();
       } else {
-        Assets().showPopup(context, '차량 번호는 4자리로 입력해주세요.');
+        Assets().showPopupAutoPop(context, '차량 번호는 4자리로 입력해주세요.');
       }
     } catch (e) {
-      Assets().showPopup(context, '차량 등록에 실패했습니다.');
+      Assets().showPopupAutoPop(context, '차량 조회에 실패했습니다.');
     }
   }
+
+  // Future<void> onSubmit(BuildContext context) async {
+  //   final carNumberProvider =
+  //       Provider.of<NumberPadModel>(context, listen: false);
+  //   try {
+  //     if (carNumberProvider.input.length == 4) {
+  //       CarInfo newInfo = CarInfo(
+  //           id: null,
+  //           carNumber: carNumberProvider.input,
+  //           date: DateTime.now(),
+  //           isChecked: 0);
+  //       await ParkingInfoDb().insert(newInfo);
+  //       Assets()
+  //           .showPopup(context, '차량 번호 [${carNumberProvider.input}] 등록되었습니다.');
+  //       carNumberProvider.clearNumber();
+  //     } else {
+  //       Assets().showPopup(context, '차량 번호는 4자리로 입력해주세요.');
+  //     }
+  //   } catch (e) {
+  //     Assets().showPopup(context, '차량 등록에 실패했습니다.');
+  //   }
+  // }
 
   Widget _buildNumberButton(
       int number, NumberPadModel carNumberProvider, BuildContext context) {

@@ -44,6 +44,9 @@ dependencies:
   flutter_localization: ^0.1.13
   flutter_localizations: 
     sdk: flutter
+  http: ^0.13.6
+  cached_network_image: ^3.2.3
+  flutter_dotenv: ^5.1.0
 
 dev_dependencies:
   flutter_test:
@@ -66,3 +69,5 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  assets:
+    - .env

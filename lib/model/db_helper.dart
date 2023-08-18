@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:parking_management/data/car_info.dart';
+import 'package:parking_management/model/car_info.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
