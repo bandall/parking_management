@@ -60,7 +60,7 @@ class ParkingApi {
       throw TimeoutException("Request took too long.");
     });
     if (response.statusCode != 302) {
-      throw Exception('로그인 실패 ${response.statusCode}');
+      throw Exception('로그인에 실패했습니다.\n [${response.statusCode}]');
     }
   }
 
@@ -112,7 +112,6 @@ class ParkingApi {
     debugPrint('세션 재설정 시도');
     // 세션 갱신 시도
     try {
-      await getSessionId();
       await idpwLogin();
     } catch (e) {
       throw Exception('세션 갱신 실패');

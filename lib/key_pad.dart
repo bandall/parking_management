@@ -91,7 +91,7 @@ class FourDigitNumberPad extends StatelessWidget {
             await onSubmit(context);
           },
           child: const Text(
-            '등록',
+            '조회',
             style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
           ),
         ),
