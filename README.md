@@ -1,10 +1,10 @@
-<p align="center">
+<div align="center">
   <img src="https://capsule-render.vercel.app/api?type=waving&height=250&color=a2dcec&fontColor=363636&text=%EC%A3%BC%EC%B0%A8%EA%B6%8C%20%EB%93%B1%EB%A1%9D%20%EC%96%B4%ED%94%8C" alt="header"/>
-</p>
+</div>
 
-<p align="center">
+<div align="center">
     Flutter를 사용해 주차권 등록 API를 키오스크 형식으로 사용할 수 있게 만든 안드로이드 어플리케이션
-</p>
+</div>
 
 <center>
 
