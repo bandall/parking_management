@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <p align="center">
   <img src="https://capsule-render.vercel.app/api?type=waving&height=250&color=a2dcec&fontColor=363636&text=%EC%A3%BC%EC%B0%A8%EA%B6%8C%20%EB%93%B1%EB%A1%9D%20%EC%96%B4%ED%94%8C" alt="header"/>
 </p>
@@ -58,7 +57,3 @@
 
 ![5](https://github.com/bandall/parking_management/assets/32717522/8da68fbe-1d79-42b7-8284-2bc4fd2d82ce)
 sqflite에 저장되어 있는 주차권을 등록한 차량 정보에 대해 보여준다.
-=======
-# parking_management
-주차 등록 API를 이용한 GUI 앱
->>>>>>> 0cfd148a78aed9dde378e189a172447dd1a404e5
